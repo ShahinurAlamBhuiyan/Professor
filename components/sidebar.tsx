@@ -4,6 +4,7 @@ import { Montserrat } from 'next/font/google'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
+import { usePathname } from 'next/navigation'
 
 import { cn } from '@/lib/utils'
 import Icon from './ui/Icon'
@@ -49,6 +50,7 @@ const routes = [
 
 
 const Sidebar = () => {
+    const pathName = usePathname();
     return (
         <div className=' space-y-4 flex flex-col h-full bg-[#111827] text-white'>
             <div className=' px-3 py-2 flex-1'>
@@ -68,7 +70,12 @@ const Sidebar = () => {
                     {
                         routes.map((route) => (
                             <Link
-                                className=' text-sm group flex p-3 w-full cursor-pointer justify-start font-medium hover:text-white hover:bg-white/10 rounded-lg transition'
+                                className={cn('text-sm group flex p-3 w-full cursor-pointer justify-start font-medium hover:text-white hover:bg-white/10 rounded-lg transition',
+                                    pathName === route.href ?
+                                        "text-white bg-white/10" :
+                                        "text-zinc-400"
+
+                                )}
                                 href={route.href}
                                 key={route.href}
                             >
