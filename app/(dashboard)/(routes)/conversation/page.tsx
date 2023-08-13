@@ -3,14 +3,20 @@
 import * as z from 'zod'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ChatCompletionRequestMessage } from "openai";
+import axios from 'axios'
 
 import Heading from "@/components/heading"
 import { formSchema } from './constants'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 const ConversationPage = () => {
+    const router = useRouter();
+    const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([]);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -20,9 +26,25 @@ const ConversationPage = () => {
     });
 
     const isLoading = form.formState.isSubmitting;
-
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        console.log(values);
+        try {
+            const userMessage: ChatCompletionRequestMessage = { role: "user", content: values.prompt };
+            const newMessages = [...messages, userMessage];
+
+            const response = await axios.post('/api/conversation', {
+                params: {
+                    // messages: newMessages,
+                    raihan: "raihan"
+                }
+            });
+            setMessages((current) => [...current, userMessage, response.data]);
+            // console.log(response)
+            form.reset();
+        } catch (error: any) {
+            console.log(error);
+        } finally {
+            router.refresh();
+        }
     }
 
     return (
@@ -62,9 +84,6 @@ const ConversationPage = () => {
                             </Button>
                         </form>
                     </Form>
-                </div>
-                <div className=' space-y-4 mt-4'>
-                    Messages Content
                 </div>
             </div>
         </div>
