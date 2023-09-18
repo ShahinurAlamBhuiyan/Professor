@@ -1,9 +1,7 @@
-'use client'
-
+"use client"
 import * as z from 'zod'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChatCompletionRequestMessage } from "openai";
 import axios from 'axios'
 
 import Heading from "@/components/heading"
@@ -16,7 +14,7 @@ import { useState } from 'react';
 
 const ConversationPage = () => {
     const router = useRouter();
-    const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([]);
+    const [messages, setMessages] = useState<string[]>([]);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -26,26 +24,53 @@ const ConversationPage = () => {
     });
 
     const isLoading = form.formState.isSubmitting;
-    const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        try {
-            const userMessage: ChatCompletionRequestMessage = { role: "user", content: values.prompt };
-            const newMessages = [...messages, userMessage];
 
-            const response = await axios.post('/api/conversation', {
-                params: {
-                    // messages: newMessages,
-                    raihan: "raihan"
-                }
-            });
-            setMessages((current) => [...current, userMessage, response.data]);
-            // console.log(response)
-            form.reset();
-        } catch (error: any) {
-            console.log(error);
-        } finally {
-            router.refresh();
-        }
+
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        const data = await fetchedSelectedQuestion(values.prompt);
+        // console.log(data);
     }
+
+    const fetchedSelectedQuestion = async (userMessage: any) => {
+
+
+        fetch('/api/shahin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                time: new Date().toISOString()
+            }),
+        })
+
+
+
+
+
+        console.log(userMessage);
+        // const res = await axios.post("/api/shahin", {
+        //     content: userMessage
+        // })
+        // const res = await fetch("/api/shahin", {
+
+        //     method: "POST",
+        //     body: JSON.stringify({
+        //         content: userMessage
+        //     }),
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //         // 'content-type': 'application/json'  
+        //     },
+
+        // });
+        // const data = await res.json();
+        // console.log(res);
+        // console.log(res.data);
+    };
+
+
+
 
     return (
         <div>
@@ -84,6 +109,7 @@ const ConversationPage = () => {
                             </Button>
                         </form>
                     </Form>
+                    <button onClick={fetchedSelectedQuestion}>hola</button>
                 </div>
             </div>
         </div>

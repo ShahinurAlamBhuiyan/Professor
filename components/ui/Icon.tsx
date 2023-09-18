@@ -3,7 +3,7 @@ import { LucideProps } from 'lucide-react';
 import dynamicIconImports from 'lucide-react/dynamicIconImports';
 
 interface IconProps extends LucideProps {
-  name: keyof typeof dynamicIconImports;
+  name: keyof typeof dynamicIconImports ;
 }
 
 const Icon = ({ name, ...props }: IconProps) => {
